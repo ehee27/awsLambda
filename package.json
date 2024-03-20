@@ -11,6 +11,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "aws-sdk": "^2.1580.0"
+    "aws-sdk": "^2.1580.0",
+    "dotenv": "^16.4.5",
+    "mysql": "^2.18.1"
   }
 }
