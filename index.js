@@ -1,28 +1,30 @@
-// import aws-sdk to access s3 Buckets
+// DYNAMO DB SCANNING - immport aws-sdk and create a new Dynamo client
+// 1. Params object refs table
+// 2. create 'data' var which is what is return from 'scan'
+// 3. create  response object
+
 import AWS from 'aws-sdk'
-const s3 = new AWS.S3({})
+const ddb = new AWS.DynamoDB.DocumentClient({ region: 'us-west-2' })
 
 export const handler = async event => {
-  // DEFINE THE DATA WE ACCESSING
-  const params1 = {
-    Bucket: 'testbucketfromlambdasl27',
-    Key: 'test1.txt',
+  const scanParams = {
+    TableName: 'courseTable1',
+    FilterExpression: '#mk = :mk',
+    ExpressionAttributeNames: {
+      '#mk': 'main_key',
+    },
+    ExpressionAttributeValues: {
+      ':mk': 'Scott Lucas',
+    },
   }
-  // DEFINE THE DATA
-  const data1 = await s3.getObject(params1).promise()
+  // DATA returned from scan
+  const data = await ddb.scan(scanParams).promise()
 
-  // CONVERT DATA so we can append
-  let buf = data1.Body.toString()
-  buf += '\n'
-  buf += 'This is the appended message'
-
-  let params2 = {
-    Bucket: 'testbucketfromlambdasl27',
-    Key: 'test1.txt',
-    Body: buf,
+  // REPSONSE OBJECT
+  const response = {
+    statusCode: 200,
+    body: data,
   }
-  // DEFINE THE DATA
-  const data2 = await s3.putObject(params2).promise()
 
-  return data2
+  return response
 }
